@@ -1,11 +1,17 @@
 import React from "react";
+import { Switch, Route } from "react-router-dom";
+import { Container } from "reactstrap";
+import Home from "./components/pages/Home";
+import PizzaForm from "./components/pages/PizzaForm";
 
 const App = () => {
   return (
-    <>
-      <h1>Teknolojik Yemekler</h1>
-      <p>Burdaki kodu silip kendi headerınızı ekleyebilirsiniz</p>
-    </>
+    <Container fluid>
+      <Switch>
+        <Route exact path="/"><Home/></Route>
+        <Route exact path="/pizza"><PizzaForm/></Route>
+      </Switch>
+    </Container>
   );
 };
 export default App;

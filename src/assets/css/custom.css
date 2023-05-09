@@ -1,0 +1,58 @@
+:root {
+    --persian-red: #CE2829;
+    --merino: #FAF7F2;
+    --lightning-yellow: #FDC913;
+    --mine-shaft: #292929;
+}
+
+.fs-0 {
+    font-size: 3.5rem;
+}
+
+.fs-7 {
+    font-size: 0.8rem;
+}
+
+.family-barlow {
+    font-family: 'Barlow', sans-serif;
+}
+
+.family-quattrocento {
+    font-family: 'Quattrocento', serif;
+}
+
+.family-satify {
+    font-family: 'Satisfy', cursive;
+}
+
+.bg-persian-red {
+    background-color: var(--persian-red);
+}
+
+.text-persian-red {
+    color: var(--persian-red);
+}
+
+.bg-merino {
+    background-color: var(--merino);
+}
+
+.text-merino {
+    color: var(--merino);
+}
+
+.bg-lightning-yellow {
+    background-color: var(--lightning-yellow);
+}
+
+.text-lightning-yellow {
+    color: var(--lightning-yellow);
+}
+
+.bg-mine-shaft {
+    background-color: var(--mine-shaft);
+}
+
+.text-mine-shaft {
+    color: var(--mine-shaft);
+}
