@@ -9,7 +9,7 @@ const App = () => {
     <Container fluid>
       <Switch>
         <Route exact path="/"><Home/></Route>
-        <Route exact path="/pizza"><PizzaForm/></Route>
+        <Route path="/pizza"><PizzaForm/></Route>
       </Switch>
     </Container>
   );
