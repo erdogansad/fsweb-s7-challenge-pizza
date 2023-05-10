@@ -3,6 +3,7 @@
     --merino: #FAF7F2;
     --lightning-yellow: #FDC913;
     --mine-shaft: #292929;
+    --scorpion: #5F5F5F;
 }
 
 .fs-0 {
@@ -55,4 +56,61 @@
 
 .text-mine-shaft {
     color: var(--mine-shaft);
+}
+
+.bg-scorpion {
+    background-color: var(--scorpion);
+}
+
+.text-scorpion {
+    color: var(--scorpion);
+}
+
+.mt-n1 {
+    margin-top: -0.25rem !important;
+}
+
+.mt-n2 {
+    margin-top: -0.5rem !important;
+}
+
+.mt-n3 {
+    margin-top: -1rem !important;
+}
+
+.mt-n4 {
+    margin-top: -1.5rem !important;
+}
+
+.mt-n5 {
+    margin-top: -3rem !important;
+}
+
+.z-n1 {
+    z-index: -1;
+}
+
+.btn-square {
+    width: 3.2rem;
+    height: 3.2rem;
+}
+
+.btn:hover {
+    background-color: var(--mine-shaft);
+}
+
+.btn-check:checked+.btn, .btn.active {
+    background-color: var(--lightning-yellow);
+    color: var(--mine-shaft);
+}
+
+.resize-none {
+    resize: none;
+}
+
+.count::-webkit-outer-spin-button,
+.count::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  -moz-appearance: textfield;
 }
