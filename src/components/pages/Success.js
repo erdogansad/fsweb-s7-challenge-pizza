@@ -42,21 +42,24 @@ const Success = () => {
             </Col>
         </Row>
         <Row className='justify-content-center'>
-          <Col xs="auto" className='text-center border-bottom pb-4'>
+          <Col xs="auto" className='text-center border-bottom pb-3'>
+              <h3 className='family-barlow text-light py-2 m-0'>Sayın, {state.data.order.flName}</h3>
               <h3 className='family-satify text-lightning-yellow p-0 m-0'>lezzetin yolda</h3>
               <h1 className='family-barlow text-merino p-0 m-0 fw-ligh fs-0 fw-light'>SİPARİŞ ALINDI</h1>
           </Col>
         </Row>
-        <Row className='justify-content-center py-4'>
+        <Row className='justify-content-center pt-5'>
           <Col xs="auto">
             <h5 className='text-light'>{state.data.foodData.name}</h5>
           </Col>
         </Row>
         <Row className='justify-content-center py-4 text-light family-barlow'>
           <Col xs="2">
-            <p>Boyut: <span className='fw-bold'>{pizzaSize[state.data.order.size]}</span></p>
+            <p>Boyut: <span className='fw-bold'>{pizzaSize[state.data.order.size]} Boy</span></p>
             <p>Hamur: <span className='fw-bold'>{pizzaDough[state.data.order.dough]}</span></p>
-            <p>Ek Malzemeler: <span className='fw-bold'>{state.data.order.extras.reduce((curr, next) => curr+=`${pizzaExtras[next]["name"]}, `,"")}</span></p>
+            <p>Ek Malzemeler: <span className='fw-bold'>{
+              state.data.order.extras.map(extra => pizzaExtras[extra].name).join(", ")}</span></p>
+            {state.data.order.note && <p>Müşteri Notu: <span className='fw-bold'>{state.data.order.note}</span></p>}
           </Col>
         </Row>
         <Row className='justify-content-center py-4 text-light'>
@@ -82,7 +85,7 @@ const Success = () => {
             </Row>
           </Col>
         </Row>
-        <Row className='justify-content-center'>
+        <Row className='justify-content-center py-4'>
           <Col xs="auto">
             <Link to="/" className="btn btn-secondary text-mine-shaft fw-bold border-0 bg-lightning-yellow px-5 py-2 rounded-pill">Ana Sayfa</Link>
           </Col>
