@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { useHistory } from 'react-router-dom';
 import * as Yup from "yup";
+import { ToastContainer, toast } from 'react-toastify';
 import { Row, Col, Input, Button, InputGroup, Form } from "reactstrap";
 
 
@@ -88,6 +89,9 @@ const PizzaForm = () => {
         .then(resp => {
           navigation.push("/order-success", resp.data)
         })
+      }else{
+        console.log("asdf")
+        toast.error("Zorunlu alanları doldurmalısın.")
       }
     });
   }
@@ -99,6 +103,7 @@ const PizzaForm = () => {
 
   return (
     <>
+      <ToastContainer />
       <Row className='bg-persian-red'>
           <Col>
               <Header/>
