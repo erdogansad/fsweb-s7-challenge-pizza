@@ -51,7 +51,7 @@ const Footer = () => {
             <Col xs="3" className='py-5 text-center'>
                 <Row className='pb-4'>
                     <Col xs="12">
-                        <h4 className='fw-bold'>Hot Menu</h4>
+                        <h4 className='fw-bold'>Sıccacık Menüler</h4>
                     </Col>
                 </Row>
                 <Row>
