@@ -15,7 +15,7 @@ const foods = [
     { name: "useEffect Tavuklu Burger", img: foodThree, review: {score: 4.9, count: 462}, price: 75 }
 ];
 
-const pizzaSize = ["S", "M", "L"];
+const pizzaSize = ["Küçük", "Orta", "Büyük"];
 const pizzaDough = ["Normal", "İnce", "Süpper İnce"];
 
 const pizzaExtras = [

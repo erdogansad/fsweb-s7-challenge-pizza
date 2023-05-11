@@ -242,7 +242,7 @@ const PizzaForm = () => {
                           <h6 className='family-barlow fw-bold'>Seçimler</h6>
                         </Col>
                         <Col className='text-end'>
-                          <h6 className='family-barlow fw-bold'>25.00₺</h6>
+                          <h6 className='family-barlow fw-bold'>{(data.extras.length *5).toFixed(2)}₺</h6>
                         </Col>
                       </Row>
                     </Col>
@@ -254,7 +254,7 @@ const PizzaForm = () => {
                           <h6 className='family-barlow fw-bold'>Toplam</h6>
                         </Col>
                         <Col className='text-end'>
-                          <h6 className='family-barlow fw-bold'>{total}₺</h6>
+                          <h6 className='family-barlow fw-bold'>{total.toFixed(2)}₺</h6>
                         </Col>
                       </Row>
                     </Col>
