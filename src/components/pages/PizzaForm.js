@@ -1,18 +1,101 @@
-import React, { useState } from 'react'
-import { Row, Col, Input, Button, InputGroup } from "reactstrap";
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
+import { useHistory } from 'react-router-dom';
+import * as Yup from "yup";
+import { Row, Col, Input, Button, InputGroup, Form } from "reactstrap";
+
+
 import Header from "../layouts/Header";
+import ExtrasList from '../layouts/ExtrasList';
 import Footer from "../layouts/Footer";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { foods, rowsCount, pizzaExtras } from '../../utils/MockData';
+import { headerImg } from "../../utils/Images";
 
-import headerImg from "../../assets/img/adv-aseets/adv-form-banner.png"
 
 const PizzaForm = () => {
-  const [size, setSize] = useState();
-  const [materials, setMaterials] = useState([]);
+  const navigation = useHistory();
+  const [food] = useState(foods[1]);
+  const [isValid, setValid] = useState(false);
+  const [data, setData] = useState({
+    size: "",
+    dough: "",
+    extras: [],
+    flName: "",
+    note: "",
+    pizzaCount: 1,
+    price: 0
+  });
+  const [errors, setErrors] = useState({
+    size: "",
+    dough: "",
+    extras: "",
+    flName: "",
+    note: "",
+    pizzaCount: ""
+  });
+  const [total, setTotal] = useState(food.price);
 
-  const toggleMaterial = (id) => materials.includes(id) ? setMaterials(materials.filter(i => i !== id)) : setMaterials([...materials, id]);
+  const userSchema = Yup.object().shape({
+    size: Yup.number().oneOf([0,1,2]).transform((value) => Number.isNaN(value) ? null : value ).required("Pizza boyutunu seçmelisin."),
+    dough: Yup.number().oneOf([0,1,2]).transform((value) => Number.isNaN(value) ? null : value ).required("Pizza hamurunu seçmelisin."),
+    extras: Yup.array().max(10, "En fazla 10 malzeme seçebilirsin."),
+    flName: Yup.string().min(2, "İsim en az 2 karakter olmalıdır").required(),
+    note: Yup.string().nullable(),
+    pizzaCount: Yup.number().min(1)
+  });
+
+  const handleChange = (e) => {
+    const {name, value, type} = e.target;
+    let val;
+
+    if(type === "checkbox"){
+      val = data.extras.includes(parseInt(value)) ? data.extras.filter(i => i !== parseInt(value)) : [...data.extras, parseInt(value)];
+    }else{
+      if(name === "pizzaCount"){
+        if(parseInt(value)) {
+          val = data.pizzaCount + 1;
+        }else{
+          if(data.pizzaCount - 1 < 1){
+            val = 1;
+          }else{
+            val = data.pizzaCount - 1;
+          }
+        }
+      }else{
+        if(type === "text" || type === "textarea"){
+          val = value;
+        }else{
+          val = parseInt(value);
+        }
+      }
+    }
+
+    Yup.reach(userSchema, name).validate(val)
+    .then(() => setErrors({...errors, [name]: ""}))
+    .catch(err => setErrors({...errors, [name]: err.errors[0]}));
+    setData({...data, [name]: val});
+  }
+
+  const checkLimit = (id) => !data.extras.includes(id) && data.extras.length === 10 ? true : false;
+
+  const onSubmit = e => {
+    e.preventDefault();
+    userSchema.isValid(data)
+    .then(valid => {
+      if(valid) {
+        axios.post("https://reqres.in/api/users", {data: {foodData: food, order: data}})
+        .then(resp => {
+          navigation.push("/order-success", resp.data)
+        })
+      }
+    });
+  }
+  
+  useEffect(() => {
+    userSchema.isValid(data).then(valid => setValid(valid));
+    setTotal((food.price + (data.extras.length * 5)) * data.pizzaCount);
+  }, [data, food, userSchema])
 
   return (
     <>
@@ -39,14 +122,16 @@ const PizzaForm = () => {
           </Row>
           <Row className='py-4'>
             <Col>
-              <h3 className='family-barlow fw-bold'>Position Absolute Acı Pizza</h3>
+              <h3 className='family-barlow fw-bold'>{food.name}</h3>
             </Col>
           </Row>
           <Row className='py-2'>
-            <Col className='d-flex justify-content-between align-items-center family-barlow fw-bold'>
-                <span className='fs-4'>85.50₺</span>
-                <span className='text-muted fs-7'>4.9</span>
-                <span className='text-muted fs-7'>(200)</span>
+            <Col>
+              <Row className='family-barlow fw-bold align-items-center'>
+                <Col xs="10" className='fs-4'>{food.price}₺</Col>
+                <Col xs="auto" className='text-muted fs-7 text-end'>{food.review.score}</Col>
+                <Col xs="auto" className='text-muted fs-7 text-end'>({food.review.count})</Col>
+              </Row>
             </Col>
           </Row>
           <Row className='py-2'>
@@ -56,7 +141,7 @@ const PizzaForm = () => {
           </Row>
         </Col>
       </Row>
-      <Row className='justify-content-center py-5'>
+      <Form id="pizza-form" className='row justify-content-center py-5' onSubmit={onSubmit}>
         <Col xs="4">
           <Row>
             <Col xs="6">
@@ -65,15 +150,22 @@ const PizzaForm = () => {
                   <h5 className='family-barlow fw-bold'>Boyut Seç <span className='text-persian-red'>*</span></h5>
                 </Col>
                 <Col xs="12" className='family-barlow py-3'>
-                    <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3'  onClick={() => setSize(1)} active={size === 1}>
-                      S
-                    </Button>
-                    <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3' onClick={() => setSize(2)} active={size === 2}>
-                      M
-                    </Button>
-                    <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3' onClick={() => setSize(3)} active={size === 3}>
-                      L
-                    </Button>
+                    <Row>
+                      <Col xs="3">
+                        <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3' onClick={handleChange} name="size" value="0" active={data.size === 0}>S</Button>
+                      </Col>
+                      <Col xs="3">
+                        <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3' onClick={handleChange} name="size" value="1" active={data.size === 1}>M</Button>
+                      </Col>
+                      <Col xs="3">
+                        <Button className='rounded-circle fw-bold bg-merino text-scorpion border-0 mx-2 px-4 py-3' onClick={handleChange} name="size" value="2" active={data.size === 2}>L</Button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        {!!errors.size && <span className='text-danger'> {errors.size} </span>}
+                      </Col>
+                    </Row>
                 </Col>
               </Row>
             </Col>
@@ -83,11 +175,15 @@ const PizzaForm = () => {
                   <h5 className='family-barlow fw-bold'>Hamur Seç <span className='text-persian-red'>*</span></h5>
                 </Col>
                 <Col xs="12" className='family-barlow py-3'>
-                  <Input className='p-3 bg-merino border-0 text-scorpion' name="select" type="select" defaultValue="--Hamur Kalınlığı Seç--">
+                  <Input id="size-dropdown" className='p-3 bg-merino border-0 text-scorpion' name="dough" type="select" onChange={handleChange} defaultValue="--Hamur Kalınlığı Seç--">
                     <option disabled>--Hamur Kalınlığı Seç--</option>
-                    <option>Normal</option>
-                    <option>İnce</option>
+                    <option value="0">Normal</option>
+                    <option value="1">İnce</option>
+                    <option value="2">Süpper İnce</option>
                   </Input>
+                </Col>
+                <Col xs="12">
+                  {!!errors.dough && <span className='text-danger'> {errors.dough} </span>}
                 </Col>
               </Row>
             </Col>
@@ -100,133 +196,38 @@ const PizzaForm = () => {
               <p className='text-scorpion family-barlow'>En fazla 10 malzeme seçebilirsiniz. (5₺)</p>
             </Col>
             <Col xs="12">
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(0)} active={materials.includes(0)}>
-                    {materials.includes(0) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Pepperoni</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(1)} active={materials.includes(1)}>
-                    {materials.includes(1) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Domates</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(2)} active={materials.includes(2)}>
-                    {materials.includes(2) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Biber</span>
-                </Col>
-              </Row>
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(3)} active={materials.includes(3)}>
-                    {materials.includes(3) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Sosis</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(4)} active={materials.includes(4)}>
-                    {materials.includes(4) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Mısır</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(5)} active={materials.includes(5)}>
-                    {materials.includes(5) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Sucuk</span>
-                </Col>
-              </Row>
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(6)} active={materials.includes(6)}>
-                    {materials.includes(6) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Kanada Jambonu</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(7)} active={materials.includes(7)}>
-                    {materials.includes(7) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Ananas</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(8)} active={materials.includes(8)}>
-                    {materials.includes(8) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Tavuk Izgara</span>
-                </Col>
-              </Row>
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(9)} active={materials.includes(9)}>
-                    {materials.includes(9) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Kanada Jambonu</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(10)} active={materials.includes(10)}>
-                    {materials.includes(10) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Ananas</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(11)} active={materials.includes(11)}>
-                    {materials.includes(11) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Tavuk Izgara</span>
-                </Col>
-              </Row>
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(12)} active={materials.includes(12)}>
-                    {materials.includes(12) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Jalepeno</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(13)} active={materials.includes(13)}>
-                    {materials.includes(13) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Kabak</span>
-                </Col>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(14)} active={materials.includes(14)}>
-                    {materials.includes(14) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Soğan</span>
-                </Col>
-              </Row>
-              <Row className='py-2'>
-                <Col xs="4">
-                  <Button className='checkbox btn-square bg-merino text-scorpion border-0 me-3' onClick={() => toggleMaterial(15)} active={materials.includes(15)}>
-                    {materials.includes(15) && <FontAwesomeIcon icon={faCheck}/>}
-                  </Button>
-                  <span className='family-barlow fw-bold text-scorpion'>Sarımsak</span>
-                </Col>
-              </Row>
+              <ExtrasList rowsCount={rowsCount} pizzaExtras={pizzaExtras} handleChange={handleChange} checkLimit={checkLimit}/>
+            </Col>
+            <Col xs="12">
+              {!!errors.extras && <span className='text-danger'> {errors.extras} </span>}
             </Col>
           </Row>
-          <Row className='pb-5 border-bottom'>
+          <Row>
+            <Col xs="12" className='py-2'>
+              <h5 className='family-barlow fw-bold'>Ad Soyad <span className='text-persian-red'>*</span></h5>
+            </Col>
+            <Col xs="12">
+              <Input id="name-input" className='resize-none py-3 bg-merino border-0' name="flName" type="text" placeholder='Ad Soyad' onChange={handleChange} />
+              {!!errors.flName && <span className='text-danger'> {errors.flName} </span>}
+            </Col>
+          </Row>
+          <Row className='pb-5 pt-3 border-bottom'>
             <Col xs="12" className='py-2'>
               <h5 className='family-barlow fw-bold'>Sipariş Notu</h5>
             </Col>
             <Col xs="12">
-            <Input className='resize-none bg-merino border-0' name="text" type="textarea" placeholder='Siparişine eklemek istediğin bir not var mı?'/>
+            <Input id="special-text" className='resize-none py-3 bg-merino border-0' name="note" type="textarea" placeholder='Siparişine eklemek istediğin bir not var mı?' onChange={handleChange}/>
             </Col>
           </Row>
           <Row className='py-5 justify-content-between'>
             <Col xs="4">
               <InputGroup>
-                <Button className='bg-merino text-mine-shaft btn-square border-0'>-</Button>
-                <Input className='text-center bg-merino border-0 btn-square count' type='number' defaultValue="1"></Input>
-                <Button className='bg-merino text-mine-shaft btn-square border-0'>+</Button>
+                <Button onClick={handleChange} name="pizzaCount" value="0" className='bg-merino text-mine-shaft btn-square border-0'>-</Button>
+                <Input className='text-center bg-merino border-0 btn-square count' type='number' value={data.pizzaCount} onChange={handleChange}/>
+                <Button onClick={handleChange} name="pizzaCount" value="1" className='bg-merino text-mine-shaft btn-square border-0'>+</Button>
               </InputGroup>
             </Col>
-            <Col xs="7" className='bg-merino'>
+            <Col xs="7" className='bg-merino rounded-top'>
               <Row className='pt-4 pb-2 px-5'>
                 <Col>
                   <Row>
@@ -253,7 +254,7 @@ const PizzaForm = () => {
                           <h6 className='family-barlow fw-bold'>Toplam</h6>
                         </Col>
                         <Col className='text-end'>
-                          <h6 className='family-barlow fw-bold'>110.50₺</h6>
+                          <h6 className='family-barlow fw-bold'>{total}₺</h6>
                         </Col>
                       </Row>
                     </Col>
@@ -261,13 +262,12 @@ const PizzaForm = () => {
                 </Col>
               </Row>
               <Row>
-                <Button className='w-100 bg-lightning-yellow border-0 family-barlow fw-bold text-mine-shaft py-3'>SİPARİŞ VER</Button>
+                <Button className='w-100 bg-lightning-yellow border-0 family-barlow fw-bold text-mine-shaft py-3' disabled={!isValid}>SİPARİŞ VER</Button>
               </Row>
             </Col>
-            
           </Row>
         </Col>
-      </Row>
+      </Form>
       <Row>
           <Col>
               <Footer/>
