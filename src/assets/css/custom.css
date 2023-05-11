@@ -99,7 +99,12 @@
     background-color: var(--mine-shaft);
 }
 
-.btn-check:checked+.btn, .btn.active {
+.btn.active {
+    background-color: var(--lightning-yellow);
+    color: var(--mine-shaft);
+}
+
+.form-check-input:checked {
     background-color: var(--lightning-yellow);
     color: var(--mine-shaft);
 }
