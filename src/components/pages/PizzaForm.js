@@ -17,7 +17,7 @@ import { headerImg } from "../../utils/Images";
 const PizzaForm = () => {
   const navigation = useHistory();
   const [food] = useState(foods[1]);
-  const [isValid, setValid] = useState(false);
+  const [valid, setValid] = useState(false);
   const [data, setData] = useState({
     size: "",
     dough: "",
@@ -78,7 +78,7 @@ const PizzaForm = () => {
     setData({...data, [name]: val});
   }
 
-  const checkLimit = (id) => !data.extras.includes(id) && data.extras.length === 10 ? true : false;
+  const checkLimit = id => !data.extras.includes(id) && data.extras.length === 10 ? true : false;
 
   const onSubmit = e => {
     e.preventDefault();
@@ -228,7 +228,7 @@ const PizzaForm = () => {
             <Col xs="4">
               <InputGroup>
                 <Button onClick={handleChange} name="pizzaCount" value="0" className='bg-merino text-mine-shaft btn-square border-0'>-</Button>
-                <Input className='text-center bg-merino border-0 btn-square count' type='number' value={data.pizzaCount} onChange={handleChange}/>
+                <Input className='text-center bg-merino border-0 btn-square count' name="pizzaCounter" type='number' value={data.pizzaCount} onChange={handleChange}/>
                 <Button onClick={handleChange} name="pizzaCount" value="1" className='bg-merino text-mine-shaft btn-square border-0'>+</Button>
               </InputGroup>
             </Col>
@@ -267,7 +267,7 @@ const PizzaForm = () => {
                 </Col>
               </Row>
               <Row>
-                <Button id="order-button" className='w-100 bg-lightning-yellow border-0 family-barlow fw-bold text-mine-shaft py-3' disabled={!isValid}>SİPARİŞ VER</Button>
+                <Button id="order-button" className='w-100 bg-lightning-yellow border-0 family-barlow fw-bold text-mine-shaft py-3' disabled={!valid}>SİPARİŞ VER</Button>
               </Row>
             </Col>
           </Row>

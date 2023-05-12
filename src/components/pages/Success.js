@@ -43,7 +43,7 @@ const Success = () => {
         </Row>
         <Row className='justify-content-center'>
           <Col xs="auto" className='text-center border-bottom pb-3'>
-              <h3 className='family-barlow text-light py-2 m-0'>Sayın, {state.data.order.flName}</h3>
+              <h3 className='family-barlow text-light py-2 m-0'>Sayın, <span data-test="flName">{state.data.order.flName}</span></h3>
               <h3 className='family-satify text-lightning-yellow p-0 m-0'>lezzetin yolda</h3>
               <h1 className='family-barlow text-merino p-0 m-0 fw-ligh fs-0 fw-light'>SİPARİŞ ALINDI</h1>
           </Col>
@@ -55,11 +55,11 @@ const Success = () => {
         </Row>
         <Row className='justify-content-center py-4 text-light family-barlow'>
           <Col xs="2">
-            <p>Boyut: <span className='fw-bold'>{pizzaSize[state.data.order.size]} Boy</span></p>
-            <p>Hamur: <span className='fw-bold'>{pizzaDough[state.data.order.dough]}</span></p>
-            <p>Ek Malzemeler: <span className='fw-bold'>{
-              state.data.order.extras.map(extra => pizzaExtras[extra].name).join(", ")}</span></p>
-            {state.data.order.note && <p>Müşteri Notu: <span className='fw-bold'>{state.data.order.note}</span></p>}
+            <p>Boyut: <span className='fw-bold' data-test="size">{pizzaSize[state.data.order.size]} Boy</span></p>
+            <p>Hamur: <span className='fw-bold' data-test="dough">{pizzaDough[state.data.order.dough]}</span></p>
+            <p>Ek Malzemeler: <span className='fw-bold' data-test="extras">{
+              state.data.order.extras.map(extra => pizzaExtras[extra-1].name).join(", ")}</span></p>
+            {state.data.order.note && <p>Müşteri Notu: <span className='fw-bold' data-test="note">{state.data.order.note}</span></p>}
           </Col>
         </Row>
         <Row className='justify-content-center py-4 text-light'>
@@ -72,7 +72,7 @@ const Success = () => {
                 <h6 className='family-barlow fw-bold'>Seçimler</h6>
               </Col>
               <Col className='text-end'>
-                <h6 className='family-barlow fw-bold'>{(state.data.order.extras.length * 5).toFixed(2)}₺</h6>
+                <h6 className='family-barlow fw-bold' data-test="extrasPrice">{(state.data.order.extras.length * 5).toFixed(2)}₺</h6>
               </Col>
             </Row>
             <Row className='pb-2'>
@@ -80,7 +80,7 @@ const Success = () => {
                 <h6 className='family-barlow fw-bold'>Toplam</h6>
               </Col>
               <Col className='text-end'>
-                <h6 className='family-barlow fw-bold'>{((state.data.foodData.price + (state.data.order.extras.length * 5)) * state.data.order.pizzaCount).toFixed(2)}₺</h6>
+                <h6 className='family-barlow fw-bold' data-test="totalPrice">{((state.data.foodData.price + (state.data.order.extras.length * 5)) * state.data.order.pizzaCount).toFixed(2)}₺</h6>
               </Col>
             </Row>
           </Col>
